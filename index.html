@@ -392,8 +392,8 @@
   /* ── VIDEOS ── */
   .videos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
     margin-top: 2rem;
   }
   .video-wrap {
@@ -402,6 +402,14 @@
     border-radius: 6px;
     overflow: hidden;
     box-shadow: 0 2px 14px var(--shadow);
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .video-wrap:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 22px var(--shadow);
   }
   .video-thumb-wrap {
     position: relative;
@@ -410,16 +418,47 @@
     overflow: hidden;
     background: #111;
   }
-  .video-thumb-wrap iframe {
+  .video-thumb-wrap img {
     position: absolute; top: 0; left: 0;
     width: 100%; height: 100%;
-    border: none;
+    object-fit: cover;
+    display: block;
+    transition: opacity .2s;
   }
+  .video-wrap:hover .video-thumb-wrap img { opacity: .85; }
+  .video-play-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px; height: 56px;
+    background: rgba(255,0,0,.85);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, transform .2s;
+    pointer-events: none;
+  }
+  .video-wrap:hover .video-play-btn {
+    background: rgb(255,0,0);
+    transform: translate(-50%,-50%) scale(1.1);
+  }
+  .video-play-btn svg { width: 22px; height: 22px; fill: white; margin-left: 4px; }
   .video-info {
     padding: 1rem 1.2rem;
   }
-  .video-info h3 { margin: 0 0 .3rem; font-size: 1rem; }
+  .video-info h3 { margin: 0 0 .3rem; font-size: 1rem; color: var(--sienna); }
   .video-info p { font-size: .85rem; margin: 0; color: #5a3a1a; }
+  .video-yt-badge {
+    display: inline-block;
+    background: #ff0000;
+    color: white;
+    font-size: .65rem;
+    font-family: 'Special Elite', cursive;
+    letter-spacing: .08em;
+    padding: .15rem .5rem;
+    border-radius: 2px;
+    margin-top: .4rem;
+    text-transform: uppercase;
+  }
 
   /* ── RESOURCES ── */
   .resources-grid {
@@ -1007,89 +1046,77 @@
 
   <div class="videos-grid">
 
-    <div class="video-wrap">
+    <a class="video-wrap" href="https://www.youtube.com/watch?v=Q16OZkgSXfM" target="_blank" rel="noopener">
       <div class="video-thumb-wrap">
-        <iframe src="https://www.youtube.com/embed/Q16OZkgSXfM"
-          title="Westward Expansion: Crash Course US History #24"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen loading="lazy">
-        </iframe>
+        <img src="https://img.youtube.com/vi/Q16OZkgSXfM/hqdefault.jpg" alt="Westward Expansion Crash Course" loading="lazy">
+        <div class="video-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="video-info">
         <h3>Westward Expansion — Crash Course US History #24</h3>
-        <p>John Green covers the forces driving 19th-century westward expansion — pioneers, railroads, and the impact on Native nations. Fast-paced and academically solid. (~12 min)</p>
+        <p>John Green: pioneers, railroads, Native nations. Fast-paced e accademicamente solido. (~12 min)</p>
+        <span class="video-yt-badge">▶ Open on YouTube</span>
       </div>
-    </div>
+    </a>
 
-    <div class="video-wrap">
+    <a class="video-wrap" href="https://www.youtube.com/watch?v=kl0lxIMMb9E" target="_blank" rel="noopener">
       <div class="video-thumb-wrap">
-        <iframe src="https://www.youtube.com/embed/kl0lxIMMb9E"
-          title="The Transcontinental Railroad — overview"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen loading="lazy">
-        </iframe>
+        <img src="https://img.youtube.com/vi/kl0lxIMMb9E/hqdefault.jpg" alt="Transcontinental Railroad" loading="lazy">
+        <div class="video-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="video-info">
         <h3>The Transcontinental Railroad</h3>
-        <p>How the railroad — built largely by Chinese and Irish immigrant labor — ended the wagon-trail era and knit a continent together. (~10 min)</p>
+        <p>La ferrovia che unì il continente e pose fine all'era dei carri pionieri. Lavoro cinese e irlandese. (~10 min)</p>
+        <span class="video-yt-badge">▶ Open on YouTube</span>
       </div>
-    </div>
+    </a>
 
-    <div class="video-wrap">
+    <a class="video-wrap" href="https://www.youtube.com/watch?v=xwBXOxQqkGc" target="_blank" rel="noopener">
       <div class="video-thumb-wrap">
-        <iframe src="https://www.youtube.com/embed/xwBXOxQqkGc"
-          title="Trail of Tears — Native American removal"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen loading="lazy">
-        </iframe>
+        <img src="https://img.youtube.com/vi/xwBXOxQqkGc/hqdefault.jpg" alt="Trail of Tears" loading="lazy">
+        <div class="video-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="video-info">
         <h3>🦅 Trail of Tears — Forced Removal of the Cherokee</h3>
-        <p>A documentary account of the forced march of the Cherokee Nation from Georgia to Oklahoma in 1838–39. Thousands died along the way. Essential viewing. (~10 min)</p>
+        <p>La deportazione forzata del popolo Cherokee dalla Georgia all'Oklahoma (1838–39). Visione fondamentale. (~10 min)</p>
+        <span class="video-yt-badge">▶ Open on YouTube</span>
       </div>
-    </div>
+    </a>
 
-    <div class="video-wrap">
+    <a class="video-wrap" href="https://www.youtube.com/watch?v=SosZ2ZRJymU" target="_blank" rel="noopener">
       <div class="video-thumb-wrap">
-        <iframe src="https://www.youtube.com/embed/SosZ2ZRJymU"
-          title="Trail of Tears — Smithsonian National Museum of the American Indian"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen loading="lazy">
-        </iframe>
+        <img src="https://img.youtube.com/vi/SosZ2ZRJymU/hqdefault.jpg" alt="Trail of Tears Smithsonian" loading="lazy">
+        <div class="video-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="video-info">
         <h3>🦅 Trail of Tears — Smithsonian / National Museum of the American Indian</h3>
-        <p>An authoritative account from the Smithsonian featuring Native American historians and perspectives. Ideal for a balanced, indigenous-centred view. (~8 min)</p>
+        <p>Prospettiva nativa da storici del Smithsonian. Per una visione completa e bilanciata. (~8 min)</p>
+        <span class="video-yt-badge">▶ Open on YouTube</span>
       </div>
-    </div>
+    </a>
 
-    <div class="video-wrap">
+    <a class="video-wrap" href="https://www.youtube.com/watch?v=BTYvqzJvWrc" target="_blank" rel="noopener">
       <div class="video-thumb-wrap">
-        <iframe src="https://www.youtube.com/embed/BTYvqzJvWrc"
-          title="Modern Marvels: Transcontinental Railroad — History Channel"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen loading="lazy">
-        </iframe>
+        <img src="https://img.youtube.com/vi/BTYvqzJvWrc/hqdefault.jpg" alt="Modern Marvels Transcontinental Railroad" loading="lazy">
+        <div class="video-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="video-info">
         <h3>Modern Marvels: Transcontinental Railroad — History Channel</h3>
-        <p>A full documentary on the engineering and human story behind the railroad that ended the Oregon Trail era. Features immigrant workers, politics and conflict. (~45 min — ideal for extended class use)</p>
+        <p>Documentario completo su ingegneria, lavoratori immigrati e politica. Per lezioni estese. (~45 min)</p>
+        <span class="video-yt-badge">▶ Open on YouTube</span>
       </div>
-    </div>
+    </a>
 
-    <div class="video-wrap">
+    <a class="video-wrap" href="https://www.youtube.com/watch?v=9SQLnhNqJAk" target="_blank" rel="noopener">
       <div class="video-thumb-wrap">
-        <iframe src="https://www.youtube.com/embed/9SQLnhNqJAk"
-          title="Indian Removal Act and the Trail of Tears — Khan Academy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen loading="lazy">
-        </iframe>
+        <img src="https://img.youtube.com/vi/9SQLnhNqJAk/hqdefault.jpg" alt="Indian Removal Act Khan Academy" loading="lazy">
+        <div class="video-play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
       <div class="video-info">
         <h3>🦅 Indian Removal Act — Khan Academy</h3>
-        <p>Clear, accessible explanation of the 1830 Indian Removal Act, President Jackson's policy, and its devastating consequences for Native peoples. Great for classroom introduction. (~8 min)</p>
+        <p>Spiegazione chiara dell'Indian Removal Act del 1830, la politica di Jackson e le sue conseguenze devastanti. (~8 min)</p>
+        <span class="video-yt-badge">▶ Open on YouTube</span>
       </div>
-    </div>
+    </a>
 
   </div>
 
