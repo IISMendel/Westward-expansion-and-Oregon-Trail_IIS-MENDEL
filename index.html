@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Go West! — Westward Expansion & the Oregon Trail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --ink:       #1c1008;
+    --parchment: #f5ead3;
+    --cream:     #fdf6e3;
+    --sienna:    #8b3a0f;
+    --rust:      #b94c1a;
+    --gold:      #c8942a;
+    --sage:      #556b4a;
+    --sky:       #3a6b8a;
+    --dust:      #c4a97d;
+    --shadow:    rgba(28,16,8,0.18);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--parchment);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--sienna);
+    border-bottom: 3px solid var(--gold);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: .5rem;
+  }
+  nav .logo {
+    font-family: 'Special Elite', cursive;
+    color: var(--gold);
+    font-size: 1.1rem;
+    padding: .7rem 0;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  nav ul {
+    list-style: none;
+    display: flex; flex-wrap: wrap; gap: .2rem;
+  }
+  nav ul li a {
+    display: block;
+    color: var(--parchment);
+    text-decoration: none;
+    font-family: 'Crimson Pro', serif;
+    font-size: .95rem;
+    letter-spacing: .03em;
+    padding: .55rem .8rem;
+    border-radius: 3px;
+    transition: background .2s, color .2s;
+  }
+  nav ul li a:hover { background: var(--gold); color: var(--ink); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 92vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, #1c1008 0%, #3d1e06 35%, #7a4516 70%, #c4a97d 100%);
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600'%3E%3Cellipse cx='600' cy='580' rx='700' ry='120' fill='%238b6540' opacity='.4'/%3E%3Cellipse cx='200' cy='560' rx='180' ry='60' fill='%236b4f30' opacity='.3'/%3E%3Cellipse cx='1050' cy='555' rx='200' ry='55' fill='%236b4f30' opacity='.3'/%3E%3C/svg%3E") bottom center / cover no-repeat;
+  }
+  .hero-stamp {
+    font-family: 'Special Elite', cursive;
+    color: var(--gold);
+    font-size: .85rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    border: 2px solid var(--gold);
+    padding: .3rem 1.2rem;
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+    opacity: .9;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 9vw, 7rem);
+    font-weight: 900;
+    color: var(--parchment);
+    line-height: 1.0;
+    text-shadow: 0 4px 24px rgba(0,0,0,.6);
+    position: relative;
+  }
+  .hero h1 em {
+    display: block;
+    font-style: italic;
+    color: var(--gold);
+    font-size: .55em;
+    margin-bottom: .2em;
+    letter-spacing: .04em;
+  }
+  .hero-sub {
+    font-family: 'Crimson Pro', serif;
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+    color: var(--dust);
+    font-style: italic;
+    max-width: 640px;
+    margin: 1.2rem auto 0;
+    position: relative;
+  }
+  .hero-stats {
+    display: flex; gap: 2.5rem; flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 3rem;
+    position: relative;
+  }
+  .hstat {
+    text-align: center;
+  }
+  .hstat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+  .hstat-lbl {
+    font-size: .8rem; letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--dust);
+    font-family: 'Crimson Pro', serif;
+  }
+  .scroll-hint {
+    margin-top: 3rem;
+    color: var(--dust);
+    font-size: .85rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+    position: relative;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
+  }
+  .section-full {
+    padding: 5rem 2rem;
+  }
+
+  .section-tag {
+    font-family: 'Special Elite', cursive;
+    font-size: .75rem;
+    letter-spacing: .25em;
+    text-transform: uppercase;
+    color: var(--sienna);
+    display: flex; align-items: center; gap: .8rem;
+    margin-bottom: .8rem;
+  }
+  .section-tag::before, .section-tag::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--dust);
+    max-width: 60px;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 900;
+    line-height: 1.15;
+    color: var(--sienna);
+    margin-bottom: 1.5rem;
+  }
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--rust);
+    margin: 2rem 0 .8rem;
+  }
+  p { margin-bottom: 1rem; }
+  strong { color: var(--sienna); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    text-align: center;
+    color: var(--dust);
+    font-size: 1.4rem;
+    letter-spacing: .5em;
+    margin: 1rem 0;
+  }
+
+  /* ── INFO BAND ── */
+  .band {
+    background: var(--sienna);
+    color: var(--parchment);
+    padding: 4rem 2rem;
+  }
+  .band h2 { color: var(--gold); }
+  .band p { color: #f0dfc0; }
+  .band h3 { color: var(--dust); }
+
+  .band-grid {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .band-card {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(200,148,42,.35);
+    border-radius: 6px;
+    padding: 1.5rem;
+  }
+  .band-card h3 { color: var(--gold); margin-top: 0; }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    position: relative;
+    padding-left: 2.5rem;
+    margin-top: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute; left: .7rem; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--gold), var(--dust), transparent);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 2rem;
+    animation: fadeUp .5s ease both;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -2.1rem; top: .45rem;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--sienna);
+    border: 2px solid var(--gold);
+  }
+  .tl-year {
+    font-family: 'Special Elite', cursive;
+    color: var(--sienna);
+    font-size: .85rem;
+    letter-spacing: .1em;
+    margin-bottom: .2rem;
+  }
+  .tl-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--rust);
+  }
+  .tl-desc { font-size: .95rem; color: #3a2a1a; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FIGURES CARDS ── */
+  .figures-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .fig-card {
+    background: var(--cream);
+    border: 1px solid var(--dust);
+    border-top: 4px solid var(--sienna);
+    border-radius: 4px;
+    padding: 1.5rem;
+    box-shadow: 4px 4px 0 var(--dust);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .fig-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--dust);
+  }
+  .fig-emoji { font-size: 2.5rem; margin-bottom: .7rem; }
+  .fig-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--sienna);
+    margin-bottom: .3rem;
+  }
+  .fig-dates { font-size: .8rem; color: var(--dust); letter-spacing: .07em; font-family: 'Special Elite', cursive; }
+  .fig-bio { font-size: .9rem; margin-top: .5rem; color: #3a2a1a; }
+
+  /* ── CHARTS ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .chart-box {
+    background: var(--cream);
+    border: 1px solid var(--dust);
+    border-radius: 6px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+  .chart-box h3 {
+    font-size: 1rem;
+    text-align: center;
+    margin: 0 0 1rem;
+    color: var(--sienna);
+    font-family: 'Special Elite', cursive;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  /* ── TRAIL FACTS ── */
+  .trail-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .trail-fact {
+    background: var(--cream);
+    border: 1px solid var(--dust);
+    border-radius: 4px;
+    padding: 1.2rem;
+    text-align: center;
+    border-bottom: 3px solid var(--sienna);
+  }
+  .trail-fact-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--sienna);
+    display: block;
+  }
+  .trail-fact-lbl {
+    font-size: .8rem;
+    color: #5a3a1a;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-family: 'Crimson Pro', serif;
+  }
+
+  /* ── QUOTE BLOCK ── */
+  blockquote {
+    border-left: 4px solid var(--gold);
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    background: var(--cream);
+    font-style: italic;
+    font-size: 1.1rem;
+    color: #3a2510;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote cite {
+    display: block;
+    margin-top: .5rem;
+    font-style: normal;
+    font-size: .85rem;
+    color: var(--sienna);
+    letter-spacing: .07em;
+    font-family: 'Special Elite', cursive;
+  }
+
+  /* ── VIDEOS ── */
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .video-wrap {
+    background: var(--cream);
+    border: 1px solid var(--dust);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 14px var(--shadow);
+  }
+  .video-thumb-wrap {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    background: #111;
+  }
+  .video-thumb-wrap iframe {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+  .video-info {
+    padding: 1rem 1.2rem;
+  }
+  .video-info h3 { margin: 0 0 .3rem; font-size: 1rem; }
+  .video-info p { font-size: .85rem; margin: 0; color: #5a3a1a; }
+
+  /* ── RESOURCES ── */
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+  }
+  .res-card {
+    display: flex; gap: 1rem; align-items: flex-start;
+    background: var(--cream);
+    border: 1px solid var(--dust);
+    border-radius: 5px;
+    padding: 1rem 1.2rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: background .2s, border-color .2s, transform .15s;
+  }
+  .res-card:hover {
+    background: #fff;
+    border-color: var(--sienna);
+    transform: translateY(-2px);
+  }
+  .res-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .res-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--sienna);
+  }
+  .res-desc { font-size: .85rem; margin: .2rem 0 0; }
+  .res-tag {
+    display: inline-block;
+    background: var(--sienna);
+    color: #fff;
+    font-size: .65rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .1rem .5rem;
+    border-radius: 2px;
+    margin-top: .4rem;
+    font-family: 'Special Elite', cursive;
+  }
+
+  /* ── GLOSSARY ── */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+  .gloss-item {
+    background: var(--cream);
+    border: 1px solid var(--dust);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+  }
+  .gloss-term {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--sienna);
+    font-size: 1.05rem;
+  }
+  .gloss-def {
+    font-size: .9rem;
+    margin-top: .3rem;
+    color: #3a2510;
+  }
+
+  /* ── TEACHER NOTES ── */
+  .teacher-box {
+    background: #eff5f0;
+    border: 2px dashed var(--sage);
+    border-radius: 6px;
+    padding: 1.5rem 2rem;
+    margin: 2.5rem 0;
+  }
+  .teacher-box-title {
+    font-family: 'Special Elite', cursive;
+    color: var(--sage);
+    font-size: .8rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: .8rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .teacher-box ul {
+    padding-left: 1.4rem;
+  }
+  .teacher-box li {
+    margin-bottom: .4rem;
+    font-size: .95rem;
+  }
+
+  /* ── NATIVE SECTION ── */
+  .native-callout {
+    background: #2d3a2a;
+    color: #dce8d8;
+    border-left: 6px solid #7caa68;
+    border-radius: 0 6px 6px 0;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .native-callout h3 {
+    color: #a8d49a;
+    margin-top: 0;
+  }
+  .native-callout p { color: #c8dcc4; margin-bottom: .6rem; }
+  .native-callout ul {
+    padding-left: 1.4rem;
+  }
+  .native-callout li {
+    color: #c8dcc4;
+    font-size: .95rem;
+    margin-bottom: .3rem;
+  }
+
+  /* ── MAP EMBED ── */
+  .map-container {
+    border: 3px solid var(--dust);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 1.5rem;
+    box-shadow: 0 4px 20px var(--shadow);
+  }
+  .map-container iframe {
+    width: 100%; height: 480px; border: none; display: block;
+  }
+  .map-credit {
+    font-size: .8rem;
+    color: #5a3a1a;
+    font-style: italic;
+    margin-top: .5rem;
+    text-align: right;
+  }
+
+  /* ── STRIPE BG ── */
+  .bg-stripe {
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 12px,
+        rgba(200,148,42,.04) 12px,
+        rgba(200,148,42,.04) 24px
+      ),
+      var(--cream);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: var(--dust);
+    padding: 3rem 2rem 2rem;
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    letter-spacing: .05em;
+  }
+  .footer-flag {
+    font-size: 1.4rem;
+    margin: 0 .3rem;
+  }
+  .footer-divider {
+    border: none;
+    border-top: 1px solid #3a2a1a;
+    margin: 1.5rem auto;
+    max-width: 400px;
+  }
+  .footer-ita {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--dust);
+    margin-bottom: .4rem;
+  }
+  .footer-eng {
+    font-family: 'Crimson Pro', serif;
+    font-size: .95rem;
+    color: #8a7a5a;
+  }
+  .footer-copy {
+    margin-top: 1.5rem;
+    font-size: .75rem;
+    color: #5a4a2a;
+    letter-spacing: .08em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    nav ul li a { padding: .4rem .5rem; font-size: .85rem; }
+    .hero h1 { font-size: 2.8rem; }
+    .hero-stats { gap: 1.2rem; }
+    .hstat-num { font-size: 1.8rem; }
+    .section { padding: 3rem 1.2rem; }
+    .section-full { padding: 3rem 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">🏕️ GO WEST!</a>
+  <ul>
+    <li><a href="#context">Context</a></li>
+    <li><a href="#trail">Oregon Trail</a></li>
+    <li><a href="#timeline">Timeline</a></li>
+    <li><a href="#figures">Figures</a></li>
+    <li><a href="#charts">Data</a></li>
+    <li><a href="#native">Native Peoples</a></li>
+    <li><a href="#videos">Videos</a></li>
+    <li><a href="#resources">Resources</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-stamp">IIS Mendel × Utah State University · 2026</div>
+  <h1>
+    <em>America's Great Journey</em>
+    Westward Expansion<br>&amp; the Oregon Trail
+  </h1>
+  <p class="hero-sub">From the Atlantic coast to the Pacific shore — how a nation and its people moved West, and what it cost.</p>
+  <div class="hero-stats">
+    <div class="hstat"><span class="hstat-num">3,200+</span><span class="hstat-lbl">miles of trail</span></div>
+    <div class="hstat"><span class="hstat-num">500K</span><span class="hstat-lbl">pioneers (1840–1870)</span></div>
+    <div class="hstat"><span class="hstat-num">4–6</span><span class="hstat-lbl">months to travel</span></div>
+    <div class="hstat"><span class="hstat-num">1803–1890</span><span class="hstat-lbl">era of expansion</span></div>
+  </div>
+  <div class="scroll-hint">↓ &nbsp; scroll to explore &nbsp; ↓</div>
+</header>
+
+<!-- CONTEXT -->
+<section id="context" class="section">
+  <div class="section-tag">Chapter I</div>
+  <h2>Historical Context</h2>
+
+  <p>Between 1803 and 1890, the United States transformed from a young nation hugging the Atlantic coast into a continental power stretching to the Pacific Ocean. This dramatic expansion, often called the era of <strong>Westward Expansion</strong>, reshaped the land, its people, and the very idea of what America meant.</p>
+
+  <h3>The Louisiana Purchase (1803)</h3>
+  <p>President Thomas Jefferson doubled the size of the United States overnight by purchasing roughly <strong>828,000 square miles</strong> of territory from Napoleonic France for approximately $15 million — about 3 cents per acre. This vast territory stretched from the Mississippi River to the Rocky Mountains and became the foundation for America's push westward.</p>
+
+  <h3>Manifest Destiny</h3>
+  <blockquote>
+    "It is our manifest destiny to overspread the continent allotted by Providence for the free development of our yearly multiplying millions."
+    <cite>— John L. O'Sullivan, <em>United States Magazine and Democratic Review</em>, 1845</cite>
+  </blockquote>
+  <p>The phrase <strong>Manifest Destiny</strong>, coined by journalist John O'Sullivan in 1845, captured the belief held by many Americans that westward expansion was not simply an ambition, but a divinely ordained mission. This ideology provided the cultural and political justification for territorial acquisition — though it also masked the violent displacement of Native peoples and the seizure of Mexican land.</p>
+
+  <h3>Push and Pull Factors</h3>
+  <div class="band-grid" style="margin-top:1rem;">
+    <div class="fig-card">
+      <div class="fig-emoji">⬅️</div>
+      <div class="fig-name">Push Factors</div>
+      <div class="fig-bio">Economic hardship in the East; overcrowded cities; exhausted farmland; the economic depression of 1837; crop failures; religious persecution (for some groups).</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">➡️</div>
+      <div class="fig-name">Pull Factors</div>
+      <div class="fig-bio">Free land under the Homestead Act (1862); California Gold Rush (1848); fertile farmland in the Willamette Valley, Oregon; religious freedom; adventure and opportunity.</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">🏛️</div>
+      <div class="fig-name">Government Support</div>
+      <div class="fig-bio">Federal policies encouraged migration: the Indian Removal Act, the Homestead Act, and massive funding for the transcontinental railroad facilitated expansion.</div>
+    </div>
+  </div>
+
+  <div class="teacher-box">
+    <div class="teacher-box-title">📋 Teacher's Note — Discussion Questions</div>
+    <ul>
+      <li>Why did the U.S. government actively encourage westward migration?</li>
+      <li>Is "Manifest Destiny" a convincing justification for territorial expansion? Compare it to European colonial rhetoric.</li>
+      <li>Who benefited from westward expansion? Who paid the price?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- THE TRAIL -->
+<section id="trail" class="band section-full">
+  <div class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="section-tag" style="color:var(--dust);">Chapter II</div>
+    <h2>The Oregon Trail</h2>
+    <p>The Oregon Trail was the most important overland migration route in American history. Stretching approximately <strong>2,170 miles</strong> from Independence, Missouri to Oregon City, Oregon, it was the path taken by an estimated half a million pioneers between the 1840s and 1870s.</p>
+
+    <div class="trail-facts">
+      <div class="trail-fact">
+        <span class="trail-fact-num">2,170</span>
+        <span class="trail-fact-lbl">miles long</span>
+      </div>
+      <div class="trail-fact">
+        <span class="trail-fact-num">1843</span>
+        <span class="trail-fact-lbl">Great Migration</span>
+      </div>
+      <div class="trail-fact">
+        <span class="trail-fact-num">~10%</span>
+        <span class="trail-fact-lbl">died en route</span>
+      </div>
+      <div class="trail-fact">
+        <span class="trail-fact-num">20 miles</span>
+        <span class="trail-fact-lbl">avg. per day</span>
+      </div>
+      <div class="trail-fact">
+        <span class="trail-fact-num">$600–$1,000</span>
+        <span class="trail-fact-lbl">cost (per family)</span>
+      </div>
+      <div class="trail-fact">
+        <span class="trail-fact-num">1869</span>
+        <span class="trail-fact-lbl">railroad replaces trail</span>
+      </div>
+    </div>
+
+    <div class="band-grid">
+      <div class="band-card">
+        <h3>🛖 Who Were the Pioneers?</h3>
+        <p>Travelers were mostly white American farm families from the Midwest and border states, though the wagon trains also included free Black settlers, recent European immigrants, and missionaries. Entire families — including children and the elderly — made the trek.</p>
+      </div>
+      <div class="band-card">
+        <h3>🐂 The Wagon</h3>
+        <p>The iconic <strong>covered wagon</strong> (prairie schooner) was typically 10–12 feet long, 4 feet wide, and drawn by 2–6 oxen. Families loaded it with food for 6 months, tools, seed, and bedding — roughly 2,000 lbs. of supplies. Most people walked beside it to spare the animals.</p>
+      </div>
+      <div class="band-card">
+        <h3>⚠️ Dangers of the Trail</h3>
+        <p>Cholera was the leading killer. Other hazards included drowning at river crossings, accidents, snakebite, and exhaustion. Weather extremes — from blistering summer heat to early mountain snows — claimed many lives. The Donner Party (1846–47) became a notorious symbol of the trail's dangers.</p>
+      </div>
+      <div class="band-card">
+        <h3>📅 The Journey</h3>
+        <p>Departing in <strong>April or May</strong> from Independence, Missouri, travelers needed to cross the Rocky Mountains before the first autumn snows — typically by September. They passed through present-day Kansas, Nebraska, Wyoming, Idaho, and Oregon over 4–6 months of continuous travel.</p>
+      </div>
+    </div>
+
+    <blockquote style="margin-top:2rem;">
+      "The road was lined with the graves of those who had gone before us. We counted 17 new graves in one day."
+      <cite>— Pioneer diary, c. 1850</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="section bg-stripe">
+  <div class="section-tag">Geography</div>
+  <h2>The Route West</h2>
+  <p>The Oregon Trail passed through six modern-day states. Key landmarks — Fort Kearny, Fort Laramie, South Pass, Fort Hall — served as resupply points and psychological milestones for exhausted travelers.</p>
+  <div class="map-container">
+    <iframe
+      src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d6532563.7!2d-107.5!3d43.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
+      allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Western United States — Oregon Trail region">
+    </iframe>
+  </div>
+  <p class="map-credit">Map area: central-western United States, through which the Oregon Trail passed (Missouri → Oregon). © Google Maps</p>
+  <p style="margin-top:1rem; font-size:.9rem;"><strong>Key stops along the trail:</strong> Independence, MO → Fort Kearny, NE → Fort Laramie, WY → South Pass, WY → Fort Bridger, WY → Fort Hall, ID → The Dalles, OR → Oregon City, OR.</p>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline" class="section">
+  <div class="section-tag">Chapter III</div>
+  <h2>Timeline of Westward Expansion</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-year">1803</div>
+      <div class="tl-title">Louisiana Purchase</div>
+      <div class="tl-desc">The U.S. acquires ~828,000 sq. miles from France, doubling the country's size. Jefferson commissions Lewis &amp; Clark to explore the new territory.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1804–1806</div>
+      <div class="tl-title">Lewis &amp; Clark Expedition</div>
+      <div class="tl-desc">Meriwether Lewis and William Clark lead the Corps of Discovery from St. Louis to the Pacific and back, mapping the West and documenting its geography, peoples, and wildlife.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1830</div>
+      <div class="tl-title">Indian Removal Act</div>
+      <div class="tl-desc">President Andrew Jackson signs the Indian Removal Act, forcing the relocation of tens of thousands of Native Americans from their eastern homelands — the Trail of Tears follows (1838).</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1836</div>
+      <div class="tl-title">First Wagons on the Oregon Trail</div>
+      <div class="tl-desc">Missionary couples Marcus and Narcissa Whitman and Henry and Eliza Spalding become the first white women to cross the Rocky Mountains overland, proving the route viable for families.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1843</div>
+      <div class="tl-title">The Great Migration</div>
+      <div class="tl-desc">Around 1,000 settlers depart in a single wagon train — the largest ever organized — for Oregon. This event marks the beginning of mass migration on the trail.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1845</div>
+      <div class="tl-title">"Manifest Destiny" coined</div>
+      <div class="tl-desc">Journalist John L. O'Sullivan publishes the phrase that will define an era, arguing that U.S. expansion across the continent is both inevitable and divinely sanctioned.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1846–1848</div>
+      <div class="tl-title">Mexican-American War</div>
+      <div class="tl-desc">The U.S. defeats Mexico and gains the Mexican Cession — present-day California, Nevada, Utah, Arizona, and parts of New Mexico, Colorado, and Wyoming.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1848</div>
+      <div class="tl-title">California Gold Rush</div>
+      <div class="tl-desc">Gold is discovered at Sutter's Mill. Within two years, California's non-Native population explodes from ~14,000 to over 100,000 as the "Forty-Niners" pour in from across the country and the world.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1862</div>
+      <div class="tl-title">Homestead Act</div>
+      <div class="tl-desc">The federal government offers 160 acres of public land for free to any adult citizen who agrees to settle and farm it for five years — dramatically accelerating western settlement.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1869</div>
+      <div class="tl-title">Transcontinental Railroad Completed</div>
+      <div class="tl-desc">The Union Pacific and Central Pacific railroads meet at Promontory Summit, Utah. A journey that took 6 months by wagon could now be made in 6 days. The Oregon Trail era effectively ends.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1876–1890</div>
+      <div class="tl-title">The "Indian Wars" &amp; Wounded Knee</div>
+      <div class="tl-desc">Conflict between the U.S. Army and Native nations intensifies as settlement encroaches on reservation lands. The massacre at Wounded Knee (1890) marks the tragic end of armed Native resistance on the Plains.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">1890</div>
+      <div class="tl-title">The Frontier Declared Closed</div>
+      <div class="tl-desc">The U.S. Census Bureau declares that a clear frontier line no longer exists. Historian Frederick Jackson Turner's famous "Frontier Thesis" argues this moment fundamentally shaped American identity.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FIGURES -->
+<section id="figures" class="section bg-stripe">
+  <div class="section-tag">Chapter IV</div>
+  <h2>Key Figures</h2>
+
+  <div class="figures-grid">
+    <div class="fig-card">
+      <div class="fig-emoji">🗺️</div>
+      <div class="fig-name">Meriwether Lewis</div>
+      <div class="fig-dates">1774 – 1809</div>
+      <div class="fig-bio">Co-leader of the Corps of Discovery, the first American overland expedition to the Pacific. His meticulous journals provided the first detailed scientific knowledge of the American West.</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">🧭</div>
+      <div class="fig-name">William Clark</div>
+      <div class="fig-dates">1770 – 1838</div>
+      <div class="fig-bio">Co-leader of the Lewis &amp; Clark Expedition. An expert cartographer, Clark drew remarkably accurate maps of the western territory. He later served as Superintendent of Indian Affairs.</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">🌟</div>
+      <div class="fig-name">Sacagawea</div>
+      <div class="fig-dates">c. 1788 – c. 1812</div>
+      <div class="fig-bio">A Lemhi Shoshone woman who served as interpreter and guide for the Lewis &amp; Clark Expedition. Her presence signaled the peaceful intent of the Corps and her knowledge proved indispensable.</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">🏛️</div>
+      <div class="fig-name">Thomas Jefferson</div>
+      <div class="fig-dates">1743 – 1826</div>
+      <div class="fig-bio">3rd President of the United States. Architect of the Louisiana Purchase and sponsor of the Lewis &amp; Clark Expedition. His vision of an "Empire of Liberty" drove early westward ambitions.</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">⛺</div>
+      <div class="fig-name">Kit Carson</div>
+      <div class="fig-dates">1809 – 1868</div>
+      <div class="fig-bio">Mountain man, trapper, and scout. Carson guided John C. Frémont's surveys of the West and became a folk hero. His career also involved the forced relocation of Navajo peoples (Long Walk).</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">🪶</div>
+      <div class="fig-name">Sitting Bull</div>
+      <div class="fig-dates">c. 1831 – 1890</div>
+      <div class="fig-bio">Hunkpapa Lakota Sioux chief and medicine man who led his people in resistance against U.S. government policies. He was a spiritual leader at the Battle of Little Bighorn (1876).</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">⚒️</div>
+      <div class="fig-name">Brigham Young</div>
+      <div class="fig-dates">1801 – 1877</div>
+      <div class="fig-bio">Mormon leader who organized the exodus of 70,000+ Latter-day Saint pioneers to Utah (1846–1869), fleeing religious persecution and building Salt Lake City in the desert.</div>
+    </div>
+    <div class="fig-card">
+      <div class="fig-emoji">📜</div>
+      <div class="fig-name">John C. Frémont</div>
+      <div class="fig-dates">1813 – 1890</div>
+      <div class="fig-bio">U.S. Army officer and explorer nicknamed "The Pathfinder." His detailed maps and enthusiastic reports of western territories inspired thousands to migrate and helped define the routes west.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CHARTS -->
+<section id="charts" class="section">
+  <div class="section-tag">Chapter V · Data &amp; Statistics</div>
+  <h2>Numbers Tell the Story</h2>
+
+  <div class="charts-grid">
+    <div class="chart-box">
+      <h3>Estimated Oregon Trail Migration by Decade</h3>
+      <canvas id="migrationChart" height="220"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>U.S. Territory Acquired (sq. miles, cumulative)</h3>
+      <canvas id="territoryChart" height="220"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>Causes of Death on the Trail</h3>
+      <canvas id="deathChart" height="220"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>U.S. Population Growth 1800–1890</h3>
+      <canvas id="popChart" height="220"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- NATIVE PEOPLES -->
+<section id="native" class="section bg-stripe">
+  <div class="section-tag">Chapter VI · A Critical Perspective</div>
+  <h2>Native Peoples &amp; the Cost of Expansion</h2>
+
+  <p>Westward Expansion cannot be understood honestly without examining its devastating impact on the Indigenous peoples of the American continent. For Native nations, this era brought dispossession, violence, forced removal, and cultural destruction.</p>
+
+  <div class="native-callout">
+    <h3>🦅 What Did Native Peoples Lose?</h3>
+    <ul>
+      <li><strong>Land:</strong> Millions of acres of ancestral homelands were seized through treaty violations, military force, and legislation.</li>
+      <li><strong>Lives:</strong> Disease, warfare, and starvation reduced many Native populations by 50–90%. The buffalo — central to Plains cultures — were nearly exterminated (from ~30 million to fewer than 1,000 by 1889).</li>
+      <li><strong>Culture:</strong> Forced assimilation through boarding schools aimed to eradicate Indigenous languages, religions, and traditions.</li>
+      <li><strong>Sovereignty:</strong> More than 370 treaties were signed between the U.S. and Native nations. Nearly all were broken by the U.S. government.</li>
+    </ul>
+  </div>
+
+  <h3>Key Events of Forced Removal</h3>
+  <p><strong>Trail of Tears (1838–39):</strong> The forced relocation of the Cherokee Nation from Georgia to present-day Oklahoma. Between 4,000 and 8,000 Cherokee died during the march from disease, starvation, and exposure.</p>
+  <p><strong>Long Walk of the Navajo (1864):</strong> Kit Carson led a campaign that destroyed Navajo crops, livestock, and homes, forcing 8,000–9,000 Navajo on a 300-mile march to an internment camp at Bosque Redondo, where thousands died.</p>
+  <p><strong>Wounded Knee Massacre (1890):</strong> U.S. soldiers killed between 250 and 300 Lakota Sioux, mostly unarmed men, women, and children. It is considered the last major armed conflict of the Indian Wars.</p>
+
+  <div class="teacher-box">
+    <div class="teacher-box-title">📋 Teacher's Note — Critical Thinking</div>
+    <ul>
+      <li>Ask students: How do different groups — pioneers, government officials, Native Americans — tell the story of this era differently?</li>
+      <li>Compare U.S. westward expansion to other examples of colonization in history. What patterns do you recognize?</li>
+      <li>Explore the concept of "terra nullius" and how it was used to justify land seizure.</li>
+      <li>Discuss: should modern governments formally apologize for historical injustices? What form should reparation take?</li>
+    </ul>
+  </div>
+</section>
+
+<!-- DAILY LIFE -->
+<section class="band section-full">
+  <div class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="section-tag" style="color:var(--dust);">Chapter VII</div>
+    <h2>Life on the Trail — Daily Reality</h2>
+    <div class="band-grid">
+      <div class="band-card">
+        <h3>🌅 A Typical Day</h3>
+        <p>Wake at 4am. Eat a cold breakfast. Hitch oxen. Walk. Walk. Walk. Noon rest. Walk again. Camp at dusk. Cook over a fire. Sleep under the wagon or inside it. Repeat for 150 days.</p>
+      </div>
+      <div class="band-card">
+        <h3>🍖 Food</h3>
+        <p>Families packed salted meat (bacon, salt pork), flour, cornmeal, dried beans, coffee, and sugar. Hunting supplemented rations — buffalo, deer, and antelope were common. Fresh food was rare and scurvy was a risk.</p>
+      </div>
+      <div class="band-card">
+        <h3>👶 Children on the Trail</h3>
+        <p>Children walked most of the way to spare the animals. They collected buffalo "chips" (dried dung) for fuel, herded cattle, and gathered wild berries. Many kept diaries that survive today as primary sources.</p>
+      </div>
+      <div class="band-card">
+        <h3>💧 River Crossings</h3>
+        <p>Major rivers — the Platte, Green, Snake, and Columbia — posed mortal dangers. Wagons could be floated across, ferried, or forded. Drowning during crossings was among the most common causes of death.</p>
+      </div>
+      <div class="band-card">
+        <h3>🏥 Disease</h3>
+        <p>Cholera was the trail's greatest killer, killing within hours. Typhoid, dysentery, and smallpox spread rapidly in the wagon trains. Most emigrants had no access to medical care. The Platte River corridor became known as the "highway of death."</p>
+      </div>
+      <div class="band-card">
+        <h3>🎵 Community &amp; Culture</h3>
+        <p>Despite hardships, wagon trains fostered community. Evenings brought music, storytelling, and the comfort of shared experience. Emigrants helped each other repair wagons, care for the sick, and bury the dead.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos" class="section">
+  <div class="section-tag">Chapter VIII · Media</div>
+  <h2>Watch &amp; Learn</h2>
+  <p>These videos are curated for classroom use. They cover the key themes of this unit in an engaging, accessible way.</p>
+
+  <div class="videos-grid">
+    <div class="video-wrap">
+      <div class="video-thumb-wrap">
+        <iframe src="https://www.youtube.com/embed/Q16C33BU7lI"
+          title="Westward Expansion: Crash Course US History #24"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen loading="lazy">
+        </iframe>
+      </div>
+      <div class="video-info">
+        <h3>Westward Expansion: Crash Course US History #24</h3>
+        <p>John Green covers the forces driving 19th-century westward expansion — entertaining, fast-paced, and academically solid. (~12 min)</p>
+      </div>
+    </div>
+
+    <div class="video-wrap">
+      <div class="video-thumb-wrap">
+        <iframe src="https://www.youtube.com/embed/mK4I2oD3s5s"
+          title="The Oregon Trail — History Channel"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen loading="lazy">
+        </iframe>
+      </div>
+      <div class="video-info">
+        <h3>The Oregon Trail — Documentary Overview</h3>
+        <p>A thorough look at life on the Oregon Trail: the wagons, the dangers, the people, and the legacy of America's great migration. (~10 min)</p>
+      </div>
+    </div>
+
+    <div class="video-wrap">
+      <div class="video-thumb-wrap">
+        <iframe src="https://www.youtube.com/embed/xdGSBE2HCPM"
+          title="Manifest Destiny and the Native American Experience"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen loading="lazy">
+        </iframe>
+      </div>
+      <div class="video-info">
+        <h3>Manifest Destiny &amp; Native Americans</h3>
+        <p>Explores the devastating impact of westward expansion on Native American nations. Critical perspective essential for a complete understanding. (~8 min)</p>
+      </div>
+    </div>
+
+    <div class="video-wrap">
+      <div class="video-thumb-wrap">
+        <iframe src="https://www.youtube.com/embed/4iDeN3V-AeI"
+          title="The Transcontinental Railroad"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen loading="lazy">
+        </iframe>
+      </div>
+      <div class="video-info">
+        <h3>The Transcontinental Railroad</h3>
+        <p>How the railroad — built largely by Chinese and Irish immigrant labor — ended the trail era and knit the continent together. (~9 min)</p>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top:1.5rem; font-size:.9rem; font-style:italic; color:#5a3a1a;">
+    ⚠️ Always preview videos before class. Availability may vary by country and time. Search titles on YouTube if a link does not load.
+  </p>
+</section>
+
+<!-- RESOURCES -->
+<section id="resources" class="section bg-stripe">
+  <div class="section-tag">Chapter IX · Resources</div>
+  <h2>Further Reading &amp; Exploration</h2>
+
+  <div class="resources-grid">
+    <a class="res-card" href="https://www.nps.gov/oreg/index.htm" target="_blank" rel="noopener">
+      <div class="res-icon">🏕️</div>
+      <div>
+        <div class="res-title">Oregon National Historic Trail — NPS</div>
+        <p class="res-desc">Official National Park Service site. Maps, history, primary sources, and virtual tours of the trail.</p>
+        <span class="res-tag">Official / Free</span>
+      </div>
+    </a>
+
+    <a class="res-card" href="https://www.pbs.org/weta/thewest/" target="_blank" rel="noopener">
+      <div class="res-icon">📺</div>
+      <div>
+        <div class="res-title">Ken Burns: "The West" — PBS</div>
+        <p class="res-desc">Companion site to the landmark documentary series. Rich with primary sources, maps, and biographies.</p>
+        <span class="res-tag">Documentary</span>
+      </div>
+    </a>
+
+    <a class="res-card" href="https://www.loc.gov/collections/american-west/" target="_blank" rel="noopener">
+      <div class="res-icon">🏛️</div>
+      <div>
+        <div class="res-title">American West Collection — Library of Congress</div>
+        <p class="res-desc">Thousands of digitized photographs, maps, diaries, and documents from the westward expansion era.</p>
+        <span class="res-tag">Primary Sources</span>
+      </div>
+    </a>
+
+    <a class="res-card" href="https://www.smithsonianmag.com/history/the-real-story-of-manifest-destiny-76818/" target="_blank" rel="noopener">
+      <div class="res-icon">📰</div>
+      <div>
+        <div class="res-title">Manifest Destiny — Smithsonian Magazine</div>
+        <p class="res-desc">A critical, accessible article examining the origins and legacy of Manifest Destiny ideology.</p>
+        <span class="res-tag">Article</span>
+      </div>
+    </a>
+
+    <a class="res-card" href="https://www.oregontrailcenter.org/" target="_blank" rel="noopener">
+      <div class="res-icon">🗺️</div>
+      <div>
+        <div class="res-title">National Historic Oregon Trail Interpretive Center</div>
+        <p class="res-desc">Baker City, Oregon. Virtual exhibits, interactive trail maps, and educator resources.</p>
+        <span class="res-tag">Museum / Interactive</span>
+      </div>
+    </a>
+
+    <a class="res-card" href="https://www.nativeamerican.com/trail-of-tears" target="_blank" rel="noopener">
+      <div class="res-icon">🦅</div>
+      <div>
+        <div class="res-title">Trail of Tears — Native American Heritage</div>
+        <p class="res-desc">Detailed account of the forced removal of the Five Civilized Tribes from Native perspective.</p>
+        <span class="res-tag">Indigenous Voices</span>
+      </div>
+    </a>
+
+    <a class="res-card" href="https://www.britannica.com/topic/Manifest-Destiny" target="_blank" rel="noopener">
+      <div class="res-icon">📚</div>
+      <div>
+        <div class="res-title">Manifest Destiny — Encyclopædia Britannica</div>
+        <p class="res-desc">Comprehensive academic overview of the doctrine, its origins, justifications, and historical legacy.</p>
+        <span class="res-tag">Encyclopedia</span>
+      </div>
+    </a>
+
+    <a class="res-card" href="https://history.state.gov/milestones/1801-1829/louisiana-purchase" target="_blank" rel="noopener">
+      <div class="res-icon">🇺🇸</div>
+      <div>
+        <div class="res-title">Louisiana Purchase — U.S. State Dept.</div>
+        <p class="res-desc">Official U.S. diplomatic history of the 1803 Louisiana Purchase: context, negotiation, and consequences.</p>
+        <span class="res-tag">Government</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- GLOSSARY -->
+<section id="glossary" class="section">
+  <div class="section-tag">Chapter X</div>
+  <h2>Key Vocabulary</h2>
+  <p>Essential terms for understanding this unit. Study these before and after the lesson.</p>
+
+  <div class="glossary-grid">
+    <div class="gloss-item">
+      <div class="gloss-term">Westward Expansion</div>
+      <div class="gloss-def">The 19th-century process by which the United States acquired and settled territories west of the Mississippi River, stretching to the Pacific Ocean.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Manifest Destiny</div>
+      <div class="gloss-def">The 19th-century belief that U.S. expansion across the entire North American continent was both justified and inevitable — destined by God or by history.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Pioneer</div>
+      <div class="gloss-def">A person who settles in previously uninhabited (or allegedly uninhabited) territory. In American history, specifically refers to those who traveled west in covered wagons.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">The Oregon Trail</div>
+      <div class="gloss-def">A 2,170-mile overland route from Independence, Missouri to Oregon City, Oregon, used by approximately 500,000 migrants between 1840 and 1870.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Louisiana Purchase (1803)</div>
+      <div class="gloss-def">The acquisition by the U.S. of ~828,000 square miles of French territory in central North America for $15 million, doubling the size of the country.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Indian Removal Act (1830)</div>
+      <div class="gloss-def">A federal law signed by President Jackson authorizing the forced relocation of Native American nations from their eastern homelands to territory west of the Mississippi.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Homestead Act (1862)</div>
+      <div class="gloss-def">Federal legislation offering 160 acres of public land free to any adult citizen who agreed to settle and improve it over five years, accelerating settlement of the Great Plains.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Gold Rush (1848–1855)</div>
+      <div class="gloss-def">The rapid influx of around 300,000 people to California after gold was discovered at Sutter's Mill in January 1848, transforming the West's demographics and economy.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Transcontinental Railroad</div>
+      <div class="gloss-def">A rail line connecting the eastern United States to California, completed in 1869. It dramatically reduced cross-country travel from months to days and ended the wagon trail era.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Trail of Tears (1838–39)</div>
+      <div class="gloss-def">The forced relocation of the Cherokee Nation and other southeastern tribes to Indian Territory (present-day Oklahoma), during which thousands died from cold, disease, and starvation.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Cholera</div>
+      <div class="gloss-def">A deadly waterborne bacterial disease that was the leading cause of death on the Oregon Trail. Caused by contaminated water, it could kill a healthy adult within hours of onset.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Covered Wagon / Prairie Schooner</div>
+      <div class="gloss-def">The primary vehicle of western migration — a wooden wagon with a white canvas cover, typically drawn by oxen, carrying a family's possessions across the continent.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Reservation</div>
+      <div class="gloss-def">An area of land managed by a Native American tribal nation under a treaty with the U.S. federal government, typically much smaller than the original tribal homelands.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Forty-Niners</div>
+      <div class="gloss-def">The roughly 300,000 prospectors who arrived in California in 1849 seeking gold, named after the year of the main Gold Rush migration.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Frontier</div>
+      <div class="gloss-def">The boundary between settled and unsettled (from the European-American perspective) land. The 1890 Census declared there was no longer a definable American frontier.</div>
+    </div>
+    <div class="gloss-item">
+      <div class="gloss-term">Buffalo / Bison</div>
+      <div class="gloss-def">The American bison was central to the survival and culture of Plains Native peoples. Systematic slaughter by white hunters reduced the population from ~30 million (c.1800) to under 1,000 by 1889.</div>
+    </div>
+  </div>
+
+  <div class="teacher-box" style="margin-top:3rem;">
+    <div class="teacher-box-title">📋 Teacher's Note — Lesson Suggestions</div>
+    <ul>
+      <li><strong>Primary Source Analysis:</strong> Use pioneer diaries (available via Library of Congress) for close reading exercises.</li>
+      <li><strong>Map Activity:</strong> Ask students to trace the Oregon Trail and identify the geographical challenges at each stage.</li>
+      <li><strong>Role Play / Simulation:</strong> Have students imagine they are a pioneer family deciding whether to make the journey. What would they pack? What risks would they accept?</li>
+      <li><strong>Comparative Essay:</strong> Compare Manifest Destiny with European colonial ideologies. What are the similarities and differences?</li>
+      <li><strong>Counter-Narrative:</strong> Ask students to rewrite a key event from a Native American perspective using secondary sources.</li>
+      <li><strong>The Oregon Trail Video Game:</strong> The classic educational game (available free online at <a href="https://archive.org/details/msdos_Oregon_Trail_The_1990" target="_blank">archive.org</a>) remains an effective and engaging classroom tool.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">🏕️ IIS Mendel · Go West!</div>
+  <p style="font-size:.85rem; color:#5a4a2a; margin-bottom:1rem;">
+    Westward Expansion &amp; the Oregon Trail · Educational Resource
+  </p>
+  <hr class="footer-divider">
+  <p class="footer-ita">
+    <span class="footer-flag">🇮🇹</span>
+    Questa pagina è stata creata e appartiene all'IIS MENDEL — Villa Cortese (MI) — 2026
+  </p>
+  <p class="footer-eng">
+    <span class="footer-flag">🇺🇸</span>
+    This page was created by and belongs to IIS MENDEL — Villa Cortese (MI) — 2026
+  </p>
+  <p class="footer-copy">Developed in collaboration with Utah State University · Prof. Crespi &amp; Prof. Hampton · IIS Mendel / USU, 2026</p>
+</footer>
+
+<!-- CHART.JS SCRIPTS -->
+<script>
+const chartDefaults = {
+  font: { family: "'Crimson Pro', Georgia, serif" },
+  color: '#3a2a1a'
+};
+Chart.defaults.font = chartDefaults.font;
+Chart.defaults.color = chartDefaults.color;
+
+const palette = {
+  sienna:  '#8b3a0f',
+  rust:    '#b94c1a',
+  gold:    '#c8942a',
+  sage:    '#556b4a',
+  sky:     '#3a6b8a',
+  dust:    '#c4a97d',
+  dark:    '#1c1008',
+};
+
+// Chart 1 – Migration by decade
+new Chart(document.getElementById('migrationChart'), {
+  type: 'bar',
+  data: {
+    labels: ['1840s','1850s','1860s','1870s'],
+    datasets: [{
+      label: 'Estimated Migrants',
+      data: [12000, 200000, 150000, 60000],
+      backgroundColor: [palette.gold, palette.sienna, palette.rust, palette.dust],
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { callback: v => v.toLocaleString() },
+        grid: { color: 'rgba(139,58,15,.1)' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Chart 2 – Territory (cumulative)
+new Chart(document.getElementById('territoryChart'), {
+  type: 'line',
+  data: {
+    labels: ['1783','1803','1819','1845','1846','1848','1853'],
+    datasets: [{
+      label: 'Total sq. miles (thousands)',
+      data: [888, 1716, 1968, 2089, 2372, 2944, 3022],
+      borderColor: palette.sienna,
+      backgroundColor: 'rgba(139,58,15,.12)',
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: palette.gold,
+      pointRadius: 5,
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: {
+        ticks: { callback: v => v.toLocaleString() + 'K' },
+        grid: { color: 'rgba(139,58,15,.1)' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Chart 3 – Causes of death (pie)
+new Chart(document.getElementById('deathChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Cholera & disease', 'Accidents', 'Drowning', 'Violence', 'Weather / exhaustion', 'Other'],
+    datasets: [{
+      data: [45, 20, 13, 8, 9, 5],
+      backgroundColor: [palette.sienna, palette.rust, palette.sky, '#c44', palette.sage, palette.dust],
+      borderWidth: 2,
+      borderColor: '#fdf6e3',
+    }]
+  },
+  options: {
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { font: { size: 11 }, padding: 8, boxWidth: 14 }
+      }
+    }
+  }
+});
+
+// Chart 4 – US Population
+new Chart(document.getElementById('popChart'), {
+  type: 'bar',
+  data: {
+    labels: ['1800','1820','1840','1860','1880','1890'],
+    datasets: [{
+      label: 'U.S. Population (millions)',
+      data: [5.3, 9.6, 17.1, 31.4, 50.2, 62.9],
+      backgroundColor: palette.sky,
+      borderRadius: 3,
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: { callback: v => v + 'M' },
+        grid: { color: 'rgba(58,107,138,.1)' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+
+</body>
+</html>
