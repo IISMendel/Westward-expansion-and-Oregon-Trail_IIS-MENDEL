@@ -1350,10 +1350,19 @@ new Chart(document.getElementById('migrationChart'), {
     scales: {
       y: {
         beginAtZero: true,
-        ticks: { callback: v => v.toLocaleString() },
+        title: { display: true, text: 'Number of migrants', color: '#3a2a1a', font: { size: 12, weight: 'bold' } },
+        ticks: {
+          color: '#3a2a1a',
+          font: { size: 12 },
+          callback: v => v >= 1000 ? (v/1000) + 'K' : v
+        },
         grid: { color: 'rgba(139,58,15,.1)' }
       },
-      x: { grid: { display: false } }
+      x: {
+        title: { display: true, text: 'Decade', color: '#3a2a1a', font: { size: 12, weight: 'bold' } },
+        ticks: { color: '#3a2a1a', font: { size: 12 } },
+        grid: { display: false }
+      }
     }
   }
 });
@@ -1378,10 +1387,19 @@ new Chart(document.getElementById('territoryChart'), {
     plugins: { legend: { display: false } },
     scales: {
       y: {
-        ticks: { callback: v => v.toLocaleString() + 'K' },
+        title: { display: true, text: 'Square miles (thousands)', color: '#3a2a1a', font: { size: 12, weight: 'bold' } },
+        ticks: {
+          color: '#3a2a1a',
+          font: { size: 12 },
+          callback: v => v.toLocaleString() + 'K'
+        },
         grid: { color: 'rgba(139,58,15,.1)' }
       },
-      x: { grid: { display: false } }
+      x: {
+        title: { display: true, text: 'Year', color: '#3a2a1a', font: { size: 12, weight: 'bold' } },
+        ticks: { color: '#3a2a1a', font: { size: 11 } },
+        grid: { display: false }
+      }
     }
   }
 });
@@ -1402,10 +1420,41 @@ new Chart(document.getElementById('deathChart'), {
     plugins: {
       legend: {
         position: 'bottom',
-        labels: { font: { size: 11 }, padding: 8, boxWidth: 14 }
+        labels: { color: '#3a2a1a', font: { size: 12 }, padding: 8, boxWidth: 14 }
+      },
+      tooltip: {
+        callbacks: {
+          label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + '%'
+        }
+      },
+      datalabels: {
+        display: false
       }
     }
-  }
+  },
+  plugins: [{
+    id: 'sliceLabels',
+    afterDraw(chart) {
+      const { ctx, data } = chart;
+      chart.data.datasets.forEach((dataset, i) => {
+        const meta = chart.getDatasetMeta(i);
+        meta.data.forEach((arc, index) => {
+          const value = dataset.data[index];
+          if (value < 4) return; // skip only truly tiny slices
+          const { x, y } = arc.tooltipPosition();
+          ctx.save();
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 13px "Crimson Pro", Georgia, serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.shadowColor = 'rgba(0,0,0,0.45)';
+          ctx.shadowBlur = 3;
+          ctx.fillText(value + '%', x, y);
+          ctx.restore();
+        });
+      });
+    }
+  }]
 });
 
 // Chart 4 – US Population
@@ -1425,10 +1474,19 @@ new Chart(document.getElementById('popChart'), {
     scales: {
       y: {
         beginAtZero: true,
-        ticks: { callback: v => v + 'M' },
+        title: { display: true, text: 'Population (millions)', color: '#1c3a4a', font: { size: 12, weight: 'bold' } },
+        ticks: {
+          color: '#1c3a4a',
+          font: { size: 12 },
+          callback: v => v + 'M'
+        },
         grid: { color: 'rgba(58,107,138,.1)' }
       },
-      x: { grid: { display: false } }
+      x: {
+        title: { display: true, text: 'Year', color: '#1c3a4a', font: { size: 12, weight: 'bold' } },
+        ticks: { color: '#1c3a4a', font: { size: 12 } },
+        grid: { display: false }
+      }
     }
   }
 });
